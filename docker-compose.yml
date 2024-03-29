@@ -1,6 +1,4 @@
-
 services:
-
   web:
     build: ./project
     ports:
@@ -11,6 +9,12 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - GQL_ENDPOINT=${GQL_ENDPOINT}
+      - GCS_BUCKET=${GCS_BUCKET}
+      - BUCKET=${BUCKET}
+      - MEILISEARCH_KEY=${MEILISEARCH_KEY}
+      - MEILISEARCH_ENDPOINT=${MEILISEARCH_ENDPOINT}
+      - GROUP_FOLDER=${GROUP_FOLDER}
     depends_on:
       - redis
 
@@ -22,6 +26,12 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - GQL_ENDPOINT=${GQL_ENDPOINT}
+      - GCS_BUCKET=${GCS_BUCKET}
+      - BUCKET=${BUCKET}
+      - MEILISEARCH_KEY=${MEILISEARCH_KEY}
+      - MEILISEARCH_ENDPOINT=${MEILISEARCH_ENDPOINT}
+      - GROUP_FOLDER=${GROUP_FOLDER}
     depends_on:
       - web
       - redis

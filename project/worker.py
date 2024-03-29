@@ -33,3 +33,4 @@ def keyword_task(data: dict):
     client = meilisearch.Client(MEILISEARCH_ENDPOINT, MASTER_KEY)
     client.index('externals').add_documents(docs)
     print('Write documents into meilisearch finished...')
+    return True
