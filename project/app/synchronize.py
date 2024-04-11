@@ -1,13 +1,7 @@
 import os
-import meilisearch
-from app.gql import gql_tags, gql_fetch
+from app.gql import gql_tags, gql_fetch_sync
 
-async def synchronize_tags(max_num: int=100):
-  gql_endpoint         = os.environ['GQL_ENDPOINT']
-  MASTER_KEY           = os.environ['MEILISEARCH_KEY']
-  MEILISEARCH_ENDPOINT = os.environ['MEILISEARCH_ENDPOINT']
-  meili_client = meilisearch.Client(MEILISEARCH_ENDPOINT, MASTER_KEY)
-  
+def synchronize_tags(meili_client, max_num: int=1000):
   ### 先確定meilisearch裡面最大的tags編號
   hits = meili_client.index('tags').search('', {
       'hitsPerPage': 1,
@@ -17,8 +11,9 @@ async def synchronize_tags(max_num: int=100):
   max_tag_id = int(hits[0]['id']) if len(hits)>0 else 0
   
   ### 使用該編號為起始條件查詢CMS的Tags
+  gql_endpoint         = os.environ['GQL_ENDPOINT']
   gql_tags_string = gql_tags.format(start_id=str(max_tag_id), take=max_num)
-  tags = await gql_fetch(gql_endpoint, gql_tags_string)
+  tags = gql_fetch_sync(gql_endpoint, gql_tags_string)
   tags = tags['tags']
 
   ### 寫回meilisearch

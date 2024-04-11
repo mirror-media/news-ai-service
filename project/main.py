@@ -5,12 +5,9 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_utils.tasks import repeat_every
 
 from worker import create_task, keyword_task
-from app.gql import gql_fetch, gql_externals
-from app.synchronize import synchronize_tags
-import app.config as config
+from app.gql import gql_fetch_async, gql_externals
 
 from schema.schemata import External
 
@@ -58,7 +55,7 @@ async def keyword(external: External):
     take = external.take
     gql_endpoint = os.environ['GQL_ENDPOINT']
     gql_externals_string = gql_externals.format(take=take)
-    externals = await gql_fetch(gql_endpoint, gql_externals_string)
+    externals = await gql_fetch_async(gql_endpoint, gql_externals_string)
     externals = externals['externals']
 
     ### keyword extraction is cpu-intensive work, put it in task
@@ -70,9 +67,3 @@ async def keyword(external: External):
         'task_id': task.id
     }
     return JSONResponse(result)
-
-@app.on_event("startup")
-@repeat_every(seconds=config.SYNCRHONIZE_SECONDS)
-async def synchronize():
-    print("synchronize tags...")
-    await synchronize_tags(config.MAX_SYNCHRONIZE_TAGS)

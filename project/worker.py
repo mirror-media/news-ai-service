@@ -3,6 +3,7 @@ import time
 from celery import Celery
 from app.config import load_vectorizer
 from app.document import gen_external_documents
+from app.synchronize import synchronize_tags
 import meilisearch
 
 celery = Celery(__name__)
@@ -23,6 +24,10 @@ def keyword_task(data: dict):
     MEILISEARCH_ENDPOINT = os.environ['MEILISEARCH_ENDPOINT']
     client = meilisearch.Client(MEILISEARCH_ENDPOINT, MASTER_KEY)
     
+    ### synchornize tags first
+    print('syncrhonize tags...')
+    synchronize_tags(client, 1000)
+
     ### run keyword extraction algorithm
     print('start keyword extraction...')
     posts = [post['title']+post['content'] for post in externals]
