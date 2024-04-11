@@ -3,7 +3,7 @@ import time
 from celery import Celery
 from app.config import load_vectorizer
 from app.document import gen_external_documents
-from app.gql import generate_tags_string, generate_external_string, gql_update_sync, gql_update_tags, gql_update_external
+from app.gql import update_external_tags, create_tags
 import meilisearch
 
 celery = Celery(__name__)
@@ -37,32 +37,16 @@ def keyword_task(data: dict):
     client.index('externals').add_documents(docs)
     print('Write documents into meilisearch finished...')
 
-    ### update tags on cms
-    tags_string = generate_tags_string(keyword_table)
-    try:
-        gql_update_sync(
-            gql_endpoint = gql_endpoint, 
-            gql_string   = gql_update_tags, 
-            gql_variable = tags_string
-        )
-    except:
-        print("Update with some repetition tags")
+    ### create new tags on cms
+    create_tags(
+        gql_endpoint  = gql_endpoint,
+        keyword_table = keyword_table
+    )
     
     ### update keyword field of externals
-    for idx, external in enumerate(externals):
-        id   = external['id']
-        tags = external['tags']
-        if tags==None or tags==[]:
-            continue  # we don't overwrite the external which already has tags
-        keywords = list(keyword_table[idx].keys())
-        external_string = generate_external_string(id, keywords)
-        try:
-            gql_update_sync(
-                gql_endpoint = gql_endpoint,
-                gql_string = gql_update_external,
-                gql_variable = external_string
-            )
-            print(f"Successfully update tags for external_id={id}")
-        except:
-            print(f'Update tags for external_id={id} failed')
+    update_external_tags(
+        gql_endpoint  = gql_endpoint, 
+        externals     = externals, 
+        keyword_table = keyword_table
+    )
     return True

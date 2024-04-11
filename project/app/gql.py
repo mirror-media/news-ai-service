@@ -109,9 +109,41 @@ def generate_external_string(id: str, keywords: list):
       },
     }
     for keyword in keywords:
-        external_string["data"]["tags"]["set"].append(
-          {
-            "name": keyword
-          }
-        )
+      external_string["data"]["tags"]["set"].append(
+        {
+          "name": keyword
+        }
+      )
     return external_string
+
+def create_tags(gql_endpoint, keyword_table):
+    tags_string = generate_tags_string(keyword_table)
+    try:
+        gql_update_sync(
+            gql_endpoint = gql_endpoint, 
+            gql_string   = gql_update_tags, 
+            gql_variable = tags_string
+        )
+    except:
+        print("create some repetitive tags")
+    return True
+
+def update_external_tags(gql_endpoint, externals, keyword_table):
+    ### share the same transport client
+    gql_transport = RequestsHTTPTransport(url=gql_endpoint)
+    gql_client = Client(transport=gql_transport, fetch_schema_from_transport=True)
+    for idx, external in enumerate(externals):
+      id   = external['id']
+      tags = external['tags']
+      if tags!=[]:
+          print(f"prevent modify external_id={id} because it already has tags")
+          continue
+      keywords = list(keyword_table[idx].keys())
+      external_string = generate_external_string(id, keywords)
+      try:
+          gql_client.execute(gql(gql_update_external), variable_values=external_string)
+          print(f"Successfully update tags for external_id={id}")
+      except:
+          print(f'Update tags for external_id={id} failed')
+    return True
+    
