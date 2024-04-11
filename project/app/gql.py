@@ -21,6 +21,16 @@ query Externals {{
 }}
 '''
 
+### 抓取Tags
+gql_tags = '''
+query Tags {{
+  tags(where: {{id: {{gt: {start_id} }} }}, take: {take}, orderBy: {{id: asc}}) {{
+    id
+    name
+  }}
+}}
+'''
+
 def gql_fetch(gql_endpoint, gql_string):
     gql_transport = AIOHTTPTransport(url=gql_endpoint)
     gql_client = Client(transport=gql_transport,

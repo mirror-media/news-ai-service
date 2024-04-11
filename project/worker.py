@@ -9,6 +9,7 @@ celery = Celery(__name__)
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379")
 celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
 keyword_extractor = load_vectorizer()
+cached_tag_mapping = {}
 
 @celery.task(name="create_task")
 def create_task(task_type):
@@ -20,6 +21,7 @@ def keyword_task(data: dict):
     externals            = data['externals']
     MASTER_KEY           = os.environ['MEILISEARCH_KEY']
     MEILISEARCH_ENDPOINT = os.environ['MEILISEARCH_ENDPOINT']
+    client = meilisearch.Client(MEILISEARCH_ENDPOINT, MASTER_KEY)
     
     ### run keyword extraction algorithm
     print('start keyword extraction...')
@@ -30,7 +32,9 @@ def keyword_task(data: dict):
     ### write the data into meilisearch engine
     print('start writing documents into meilisearch...')
     docs = gen_external_documents(externals, keyword_table)
-    client = meilisearch.Client(MEILISEARCH_ENDPOINT, MASTER_KEY)
     client.index('externals').add_documents(docs)
     print('Write documents into meilisearch finished...')
+
+    ### TODO: write the information back to cms
+
     return True

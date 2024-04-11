@@ -5,9 +5,12 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_utils.tasks import repeat_every
 
 from worker import create_task, keyword_task
 from app.gql import gql_fetch, gql_externals
+from app.synchronize import synchronize_tags
+import app.config as config
 
 from schema.schemata import External
 
@@ -67,3 +70,9 @@ async def keyword(external: External):
         'task_id': task.id
     }
     return JSONResponse(result)
+
+@app.on_event("startup")
+@repeat_every(seconds=config.SYNCRHONIZE_SECONDS)
+async def synchronize():
+    print("synchronize tags...")
+    await synchronize_tags(config.MAX_SYNCHRONIZE_TAGS)

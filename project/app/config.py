@@ -2,6 +2,9 @@ from app.tool import open_file
 from app.keyword import KeywordExtractor
 from ckip_transformers.nlp import CkipWordSegmenter, CkipPosTagger, CkipNerChunker
 
+SYNCRHONIZE_SECONDS  = 180
+MAX_SYNCHRONIZE_TAGS = 100
+
 def load_vectorizer():
     ### load corpus for Tokenizer
     model = 'bert-base'
