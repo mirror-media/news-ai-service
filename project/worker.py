@@ -3,7 +3,6 @@ import time
 from celery import Celery
 from app.config import load_vectorizer
 from app.document import gen_external_documents
-from app.synchronize import synchronize_tags
 from app.gql import generate_tags_string, generate_external_string, gql_update_sync, gql_update_tags, gql_update_external
 import meilisearch
 
