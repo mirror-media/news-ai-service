@@ -18,3 +18,4 @@ numpy
 ckip-transformers
 scikit-learn
 meilisearch
+requests_toolbelt
