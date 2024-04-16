@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from worker import create_task, keyword_task
 from app.gql import gql_fetch_async, gql_externals
+from app.config import DEFAULT_FETCH_EXTERNALS
 
 from schema.schemata import External
 
@@ -52,11 +53,21 @@ async def keyword(external: External):
     '''
         calculate keyword for externals and write the result into meilisearch 
     '''
-    take = external.take
+    take = external.take ### how many externals should we process, take should be less than 50
     gql_endpoint = os.environ['GQL_ENDPOINT']
-    gql_externals_string = gql_externals.format(take=take)
+    gql_externals_string = gql_externals.format(take=DEFAULT_FETCH_EXTERNALS)
     externals = await gql_fetch_async(gql_endpoint, gql_externals_string)
     externals = externals['externals']
+    
+    ### filter the externals that have no keywords and with keywords
+    externals_with_keyword, externals_no_keyword = [], []
+    for external in externals:
+        if external['tags'] == []:
+            externals_no_keyword.append(external)
+        else:
+            externals_with_keyword.append(external)
+    remaining = (take - len(externals_no_keyword)) if len(externals_no_keyword)<take else 0
+    externals = (externals_no_keyword + externals_with_keyword[:remaining]) if remaining>0 else externals_no_keyword[:take]
 
     ### keyword extraction is cpu-intensive work, put it in task
     task = keyword_task.delay({

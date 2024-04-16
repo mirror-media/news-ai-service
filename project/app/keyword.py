@@ -192,7 +192,7 @@ class KeywordExtractor():
             new_keywords = {}
             for keyword, score in keywords.items():
                 keyword = re.sub(pattern, '', keyword)
-                if keyword=='': ### invalid keyword, so skip it
+                if keyword=='' or len(keyword)<2: ### invalid keyword, so skip it
                     continue
                 num_keywords = len(new_keywords)
                 if (num_keywords<min_keywords):
