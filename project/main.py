@@ -60,14 +60,11 @@ async def keyword(external: External):
     externals = externals['externals']
     
     ### filter the externals that have no keywords and with keywords
-    externals_with_keyword, externals_no_keyword = [], []
+    externals_no_keyword = []
     for external in externals:
         if external['tags'] == []:
             externals_no_keyword.append(external)
-        else:
-            externals_with_keyword.append(external)
-    remaining = (take - len(externals_no_keyword)) if len(externals_no_keyword)<take else 0
-    externals = (externals_no_keyword + externals_with_keyword[:remaining]) if remaining>0 else externals_no_keyword[:take]
+    externals = externals_no_keyword
 
     ### keyword extraction is cpu-intensive work, put it in task
     task = keyword_task.delay({
