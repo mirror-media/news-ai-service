@@ -8,7 +8,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from worker import create_task, keyword_task
 from app.gql import gql_fetch_async, gql_externals
-from app.config import DEFAULT_FETCH_EXTERNALS
 
 from schema.schemata import External
 
