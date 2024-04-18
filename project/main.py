@@ -53,9 +53,9 @@ async def keyword(external: External):
     '''
         calculate keyword for externals and write the result into meilisearch 
     '''
-    take = external.take ### how many externals should we process, take should be less than 50
+    take = external.take ### how many externals should we process
     gql_endpoint = os.environ['GQL_ENDPOINT']
-    gql_externals_string = gql_externals.format(take=DEFAULT_FETCH_EXTERNALS)
+    gql_externals_string = gql_externals.format(take=take)
     externals = await gql_fetch_async(gql_endpoint, gql_externals_string)
     externals = externals['externals']
     

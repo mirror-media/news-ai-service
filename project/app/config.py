@@ -5,7 +5,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 SYNCRHONIZE_SECONDS     = 180
 MAX_SYNCHRONIZE_TAGS    = 100
-DEFAULT_FETCH_EXTERNALS = 100
 
 def load_vectorizer():
     ### load corpus for Tokenizer
