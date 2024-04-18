@@ -26,7 +26,7 @@ def keyword_task(data: dict):
     
     ### run keyword extraction algorithm
     print('start keyword extraction...')
-    posts = [post['title']+post['content'] for post in externals]
+    posts = [post['title']+post['brief']+post['content'] for post in externals]
     keyword_table = keyword_extractor.get_keywords(posts)
     print('keyword extraction finished...')
 
