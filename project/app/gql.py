@@ -5,7 +5,7 @@ from gql import gql, Client
 ### 抓取外部文章的gql
 gql_externals = '''
 query Externals {{
-  externals(where: {{state: {{equals: "published"}} }}, take: {take}, orderBy: {{publishedDate: desc}}) {{
+  externals(where: {{state: {{equals: "published"}} }}, take: {take}, orderBy: {{id: desc}}) {{
     id
     state
     publishedDateString
