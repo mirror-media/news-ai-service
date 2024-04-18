@@ -1,4 +1,3 @@
-from ckip_transformers.nlp import CkipWordSegmenter
 from keybert import KeyBERT
 from bs4 import BeautifulSoup as bs
 
