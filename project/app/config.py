@@ -12,13 +12,9 @@ def load_vectorizer():
     model = 'bert-base'
     ws  = CkipWordSegmenter(model=model)
     print('Load ws successfully')
-
-    def ws_tokenizer(text):
-        words = ws([text])
-        return words[0]
-    vectorizer = CountVectorizer(tokenizer=ws_tokenizer)
     
     ### create keyword extractor
+    vectorizer = CountVectorizer(tokenizer=lambda text: ws([text])[0])
     keyword_extractor = KeywordExtractor(
         model = 'distiluse-base-multilingual-cased-v1',
         vectorizer = vectorizer
