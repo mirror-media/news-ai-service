@@ -33,8 +33,8 @@ def home(request: Request):
 
 @app.post("/tasks", status_code=201)
 def run_task(payload = Body(...)):
-    task_type = payload["type"]
-    task = create_task.delay(int(task_type))
+    content = payload["content"]
+    task = create_task.delay(str(content))
     return JSONResponse({"task_id": task.id})
 
 @app.get("/tasks/{task_id}")
@@ -63,11 +63,10 @@ async def keyword(external: External):
     for external in externals:
         if external['tags'] == []:
             externals_no_keyword.append(external)
-    externals = externals_no_keyword
 
     ### keyword extraction is cpu-intensive work, put it in task
     task = keyword_task.delay({
-        'externals': externals
+        'externals': externals_no_keyword
     })
     result = {
         'message': "Keyword extraction sent in the background",
