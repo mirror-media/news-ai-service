@@ -10,7 +10,7 @@ def gen_external_documents(externals, keyword_table):
         return None
     documents = copy.deepcopy(externals)
     for idx, post in enumerate(documents):
-        keywords = list(keyword_table[idx].keys())
+        keywords = keyword_table[idx]
         tmp = {
             'id': post['id'],
             'title': post['title'],

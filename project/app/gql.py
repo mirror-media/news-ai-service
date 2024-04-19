@@ -82,7 +82,7 @@ def generate_tags_string(keyword_table):
     '''
     total_keywords = set()
     for keywords in keyword_table:
-        total_keywords = total_keywords | set(keywords.keys())
+        total_keywords = total_keywords | set(keywords)
     
     tags_string = {
         "data": []
@@ -138,7 +138,7 @@ def update_external_tags(gql_endpoint, externals, keyword_table):
       if tags!=[]:
           print(f"prevent modify external_id={id} because it already has tags")
           continue
-      keywords = list(keyword_table[idx].keys())
+      keywords = keyword_table[idx]
       external_string = generate_external_string(id, keywords)
       try:
           gql_client.execute(gql(gql_update_external), variable_values=external_string)
